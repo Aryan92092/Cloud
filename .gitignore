@@ -1,0 +1,57 @@
+# ============================================================
+# Root .gitignore  -  Student Ranking & Result Processing System
+# ============================================================
+
+# -- Node / npm ----------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# -- Environment / Secrets (NEVER commit these) ---------------
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+*.env
+
+# -- Build output ---------------------------------------------
+dist/
+build/
+.vite/
+out/
+
+# -- Logs -----------------------------------------------------
+logs/
+*.log
+
+# -- OS-specific ----------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# -- IDE / Editor ---------------------------------------------
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# -- Docker temporary files -----------------------------------
+docker-compose.override.yml
+
+# -- AWS / SSH credentials (NEVER commit) ---------------------
+*.pem
+*.key
+*.p12
+.aws/
+
+# -- Misc -----------------------------------------------------
+.cache/
+.parcel-cache/
+coverage/

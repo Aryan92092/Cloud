@@ -1,0 +1,13 @@
+# Files/folders to exclude when Docker builds the frontend image.
+
+node_modules
+.env
+.env.*
+.git
+.gitignore
+dist
+*.log
+logs/
+npm-debug.log*
+.DS_Store
+Thumbs.db

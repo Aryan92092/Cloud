@@ -1,0 +1,73 @@
+# ============================================================
+# docker-compose.yml  -  Student Ranking & Result Processing System
+#
+# Runs two containers:
+#   frontend  -  React app served by Nginx on port 80
+#   backend   -  Express API on port 5000 (internal only)
+#
+# Access the application at: http://localhost
+# The browser never needs to open port 5000 directly.
+# ============================================================
+
+services:
+
+  # -- Backend (Express API) ----------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: student-ranking-backend
+    restart: unless-stopped
+
+    environment:
+      # Port the Express server listens on inside the container
+      PORT: 5000
+      # Node environment
+      NODE_ENV: production
+      # Optional: set MONGODB_URI here or in a .env file to use MongoDB.
+      # If left empty the app automatically uses the in-memory store.
+      MONGODB_URI: ${MONGODB_URI:-}
+
+    # Port 5000 is NOT exposed to the host machine.
+    # Only the frontend container (via the internal Docker network) can reach it.
+    # This is intentional for security.
+    expose:
+      - "5000"
+
+    networks:
+      - app-network
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # -- Frontend (React + Nginx) -------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: student-ranking-frontend
+    restart: unless-stopped
+
+    # Port 80 is exposed to the host (and to the internet on AWS).
+    # This is the ONLY port the outside world needs.
+    ports:
+      - "80:80"
+
+    networks:
+      - app-network
+
+    # Wait for the backend to be healthy before starting Nginx.
+    depends_on:
+      backend:
+        condition: service_healthy
+
+# -- Internal Docker network -----------------------------------
+# Both containers share this network so Nginx can forward
+# /api/* requests to the backend service by its service name.
+networks:
+  app-network:
+    driver: bridge
